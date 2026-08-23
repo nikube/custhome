@@ -1,0 +1,19 @@
+{
+  "schema_version": "1",
+  "module_id": "custhome",
+  "name": "CustHome",
+  "description": "Modern home page made of editable tiles: in-place editing (title, subtitle, icon, colors, size, link), drag & drop ordering, auto-save. Links picked from Dolibarr menus or custom module pages.",
+  "author": "Anatole Conseil",
+  "url": "https://github.com/nikube/custhome",
+  "license": "GPL-3.0-or-later",
+  "dolibarr_module_id": 185168,
+  "branch": "main",
+  "compatibility": {
+    "0.x": {
+      "dolibarr_min": "19.0.0",
+      "dolibarr_max": "24.*",
+      "php_min": "7.4"
+    }
+  },
+  "dependencies": { "modules": [], "php_extensions": [] }
+}
