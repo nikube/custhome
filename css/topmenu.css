@@ -1,0 +1,4 @@
+/* CustHome — top menu button: same geometry as the native "Home" entry */
+#mainmenutd_custhome a.tmenuimage { height: 28px; overflow: hidden; }
+#mainmenutd_custhome div.mainmenu.custhome { padding-top: 0; height: 28px; }
+#mainmenutd_custhome div.mainmenu.custhome span { line-height: 28px; }

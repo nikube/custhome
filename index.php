@@ -71,7 +71,9 @@ if ($canedit) {
 	print '</select></label>';
 	print '<label>URL<input type="text" data-field="url" class="flat" placeholder="/societe/list.php ou https://…"></label>';
 	print '<label class="custhome-inline"><input type="checkbox" data-field="target"> '.$langs->trans('CustHomeOpenNewTab').'</label>';
-	print '<label>'.$langs->trans('CustHomeIcon').' <a href="https://fontawesome.com/v5/search?m=free" target="_blank" rel="noopener">(Font Awesome 5)</a><input type="text" data-field="icon" class="flat" placeholder="fa-building"></label>';
+	print '<label>'.$langs->trans('CustHomeIcon').'<span class="custhome-iconrow"><span class="custhome-iconpreview" id="custhome-iconpreview"></span><input type="text" data-field="icon" class="flat" placeholder="fa-building"></span></label>';
+print '<input type="text" class="flat custhome-iconsearch" id="custhome-iconsearch" placeholder="'.dol_escape_htmltag($langs->trans('CustHomeIconSearch')).'">';
+print '<div class="custhome-icons" id="custhome-icons"></div>';
 	print '<div class="custhome-row"><label>'.$langs->trans('CustHomeBgColor').'<input type="color" data-field="bg"></label>';
 	print '<label>'.$langs->trans('CustHomeFgColor').'<input type="color" data-field="fg"></label></div>';
 	print '<div class="custhome-presets" id="custhome-presets"></div>';

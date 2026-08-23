@@ -38,3 +38,4 @@ CustHomeResetDone=Grid reset
 CustHomeTopMenu=■
 CustHomeTopMenuOpt=Top menu button
 CustHomeTopMenuHelp=Adds a "■" button before "Home" in the top menu bar (disable then re-enable the module if it does not show up).
+CustHomeIconSearch=Search an icon…

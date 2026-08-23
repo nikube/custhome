@@ -17,6 +17,7 @@ function custhomeInit() {
 	var editing = false;
 	var current = null;
 	var saveTimer = null;
+	var ICONS = ['home','th-large','star','heart','bolt','bell','bookmark','flag','tag','tags','link','external-link-alt','search','plus','check','times','cog','cogs','tools','wrench','sliders-h','user','users','user-tie','user-friends','address-book','address-card','id-card','building','industry','store','warehouse','handshake','briefcase','suitcase','box','boxes','cube','cubes','barcode','qrcode','shopping-cart','shopping-bag','cart-plus','truck','shipping-fast','dolly','pallet','file','file-alt','file-invoice','file-invoice-dollar','file-contract','file-signature','file-pdf','file-excel','file-csv','file-import','file-export','folder','folder-open','copy','paste','clipboard','clipboard-list','clipboard-check','list','list-ul','list-ol','tasks','check-square','calendar','calendar-alt','calendar-check','calendar-plus','clock','history','hourglass-half','stopwatch','chart-bar','chart-line','chart-pie','chart-area','table','th','th-list','columns','tachometer-alt','dollar-sign','euro-sign','coins','money-bill','money-bill-wave','money-check-alt','credit-card','wallet','piggy-bank','receipt','cash-register','balance-scale','percent','calculator','university','landmark','hand-holding-usd','envelope','envelope-open','paper-plane','inbox','comments','comment','comment-dots','phone','phone-alt','mobile-alt','fax','headset','bullhorn','rss','globe','globe-europe','map-marker-alt','map','compass','route','plane','car','bicycle','ship','project-diagram','sitemap','network-wired','server','database','cloud','cloud-upload-alt','cloud-download-alt','download','upload','sync','sync-alt','redo','undo','exchange-alt','random','code','code-branch','terminal','laptop','laptop-code','desktop','tablet-alt','print','camera','image','images','video','music','microphone','play','pause','stop','lock','unlock','key','shield-alt','user-shield','user-lock','eye','eye-slash','lightbulb','magic','rocket','paint-brush','palette','pen','pencil-alt','edit','highlighter','trash','trash-alt','archive','book','book-open','graduation-cap','chalkboard-teacher','newspaper','info-circle','question-circle','exclamation-triangle','exclamation-circle','life-ring','medkit','first-aid','stethoscope','hospital','heartbeat','seedling','leaf','tree','sun','moon','umbrella','fire','snowflake','thermometer-half','bed','couch','utensils','coffee','birthday-cake','gift','trophy','award','medal','crown','gem','smile','thumbs-up','thumbs-down','hands-helping','hand-point-right','sign-in-alt','sign-out-alt','power-off','cut','paperclip','puzzle-piece','layer-group','filter','sort','arrows-alt','expand','compress','bars','ellipsis-h','hashtag','at','asterisk','ban','recycle','gavel','passport','ticket-alt','industry','hard-hat','hammer','screwdriver','toolbox','plug','battery-half','wifi','satellite-dish','robot','microchip','wine-bottle','beer','pizza-slice','shopping-basket','tshirt','shoe-prints','dog','cat','paw','horse','fish'];
 	var PRESETS = ['#2563eb', '#7c3aed', '#db2777', '#ea580c', '#d97706', '#059669', '#0891b2', '#475569', '#1f2937', '#dc2626', '#65a30d', '#0ea5e9'];
 
 	/* ---------- helpers ---------- */
@@ -292,6 +293,7 @@ function custhomeInit() {
 		field('bg').value = t.bg || '#2563eb';
 		field('fg').value = t.fg || '#ffffff';
 		panel.hidden = false;
+		if (typeof updateIconPreview === 'function') { iconSearch.value = ''; renderIcons(''); updateIconPreview(); }
 		requestAnimationFrame(function () { panel.classList.add('open'); });
 		field('title').focus();
 	}
@@ -351,11 +353,40 @@ function custhomeInit() {
 			}
 		});
 
+		var iconsBox = document.getElementById('custhome-icons');
+		var iconSearch = document.getElementById('custhome-iconsearch');
+		var preview = document.getElementById('custhome-iconpreview');
+		function updateIconPreview() {
+			var ic = field('icon').value.trim() || 'fa-link';
+			preview.innerHTML = '<span class="' + esc(iconClass(ic)) + '"></span>';
+			preview.style.background = field('bg').value;
+			preview.style.color = field('fg').value;
+			iconsBox.querySelectorAll('span.sel').forEach(function (n) { n.classList.remove('sel'); });
+			var cur = iconsBox.querySelector('[data-icon="' + ic.replace(/^fa[brs]? /, '') + '"]');
+			if (cur) cur.classList.add('sel');
+		}
+		function renderIcons(filter) {
+			filter = (filter || '').toLowerCase().replace(/^fa-/, '');
+			iconsBox.innerHTML = '';
+			ICONS.forEach(function (name) {
+				if (filter && name.indexOf(filter) < 0) return;
+				var sp = document.createElement('span');
+				sp.setAttribute('data-icon', 'fa-' + name);
+				sp.title = 'fa-' + name;
+				sp.innerHTML = '<span class="fa fa-' + name + '"></span>';
+				sp.addEventListener('click', function () { field('icon').value = 'fa-' + name; readPanel(); updateIconPreview(); });
+				iconsBox.appendChild(sp);
+			});
+		}
+		iconSearch.addEventListener('input', function () { renderIcons(this.value); updateIconPreview(); });
+		['icon', 'bg', 'fg'].forEach(function (n) { field(n).addEventListener('input', updateIconPreview); });
+		renderIcons('');
+
 		var pr = document.getElementById('custhome-presets');
 		PRESETS.forEach(function (c) {
 			var s = document.createElement('span');
 			s.style.background = c; s.title = c;
-			s.addEventListener('click', function () { field('bg').value = c; readPanel(); });
+			s.addEventListener('click', function () { field('bg').value = c; readPanel(); updateIconPreview(); });
 			pr.appendChild(s);
 		});
 

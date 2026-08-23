@@ -38,3 +38,4 @@ CustHomeResetDone=Grille réinitialisée
 CustHomeTopMenu=■
 CustHomeTopMenuOpt=Bouton dans le menu du haut
 CustHomeTopMenuHelp=Ajoute un bouton « ■ » avant « Accueil » dans la barre de menu (désactiver puis réactiver le module si le bouton n'apparaît pas).
+CustHomeIconSearch=Rechercher une icône…

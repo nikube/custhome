@@ -43,7 +43,9 @@ class modCustHome extends DolibarrModules
 		$this->const_name = 'MAIN_MODULE_'.strtoupper($this->name);
 		$this->picto = 'fa-th-large';
 
-		$this->module_parts = array();
+		$this->module_parts = array(
+			'css' => array('/custhome/css/topmenu.css'),
+		);
 
 		$this->dirs = array();
 		$this->config_page_url = array('setup.php@custhome');
@@ -93,7 +95,7 @@ class modCustHome extends DolibarrModules
 			'fk_menu' => '',
 			'type' => 'top',
 			'titre' => 'CustHomeTopMenu',
-			'prefix' => '<span class="fas fa-square fa-fw"></span>',
+			'prefix' => '<span class="fas fa-th-large fa-fw"></span>',
 			'mainmenu' => 'custhome',
 			'leftmenu' => '',
 			'url' => '/custhome/index.php',
