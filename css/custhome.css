@@ -18,14 +18,9 @@
 .custhome-tile .custhome-ico-bg { position: absolute; right: -10px; bottom: -18px; font-size: 6.5em; opacity: .12; pointer-events: none; }
 .custhome-tile .custhome-title { font-size: 1.15em; font-weight: 600; line-height: 1.2; position: relative; }
 .custhome-tile .custhome-sub { font-size: .85em; opacity: .85; margin-top: 3px; position: relative; }
-.custhome-tile.s-2x1 { grid-column: span 2; }
-.custhome-tile.s-1x2 { grid-row: span 2; }
-.custhome-tile.s-2x2 { grid-column: span 2; grid-row: span 2; }
-.custhome-tile.s-3x1 { grid-column: span 3; }
-.custhome-tile.s-4x1 { grid-column: span 4; }
-.custhome-tile.s-2x2 .custhome-title, .custhome-tile.s-1x2 .custhome-title { font-size: 1.4em; }
-@media (max-width: 900px) { .custhome-tile.s-3x1, .custhome-tile.s-4x1 { grid-column: span 2; } }
-@media (max-width: 480px) { .custhome-tile[class*="s-"] { grid-column: span 1; } }
+.custhome-tile.big .custhome-title { font-size: 1.4em; }
+@media (max-width: 900px) { .custhome-tile { grid-column: span min(var(--w, 1), 2) !important; } }
+@media (max-width: 480px) { .custhome-tile { grid-column: span 1 !important; } }
 
 /* Edit mode */
 .custhome.editing .custhome-tile { cursor: grab; outline: 2px dashed rgba(255,255,255,.6); outline-offset: -6px; }
@@ -52,3 +47,9 @@
 .custhome-presets span:hover { border-color: #111; }
 .custhome-panel-foot { margin-top: 10px; display: flex; justify-content: flex-end; }
 .custhome-panel label.custhome-inline { flex-direction: row; align-items: center; }
+
+/* Resize handle (edit mode) */
+.custhome-tile .custhome-resize { display: none; position: absolute; right: 6px; bottom: 6px; width: 22px; height: 22px; cursor: nwse-resize; z-index: 3; border-radius: 4px; background: rgba(255,255,255,.85); }
+.custhome-tile .custhome-resize::after { content: ""; position: absolute; right: 5px; bottom: 5px; width: 8px; height: 8px; border-right: 2px solid #1f2937; border-bottom: 2px solid #1f2937; }
+.custhome.editing .custhome-tile .custhome-resize { display: block; }
+.custhome-tile.resizing { transition: none; box-shadow: 0 0 0 3px #2563eb; }

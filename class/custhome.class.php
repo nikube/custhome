@@ -115,7 +115,6 @@ class CustHome
 	 */
 	public function normalizeTile($t)
 	{
-		$sizes = array('1x1', '2x1', '1x2', '2x2', '3x1', '4x1');
 		$url = trim((string) ($t['url'] ?? ''));
 		// Only allow relative Dolibarr paths or http(s) URLs
 		if (preg_match('#^[a-z][a-z0-9+.\-]*:#i', $url) && !preg_match('#^https?://#i', $url)) {
@@ -131,7 +130,7 @@ class CustHome
 			'icon' => preg_replace('/[^a-z0-9\- ]/i', '', (string) ($t['icon'] ?? 'fa-link')) ?: 'fa-link',
 			'bg' => preg_match('/^#[0-9a-f]{6}$/i', (string) ($t['bg'] ?? '')) ? strtolower($t['bg']) : '#2563eb',
 			'fg' => preg_match('/^#[0-9a-f]{6}$/i', (string) ($t['fg'] ?? '')) ? strtolower($t['fg']) : '#ffffff',
-			'size' => in_array(($t['size'] ?? ''), $sizes) ? $t['size'] : '1x1',
+			'size' => preg_match('/^[1-8]x[1-4]$/', (string) ($t['size'] ?? '')) ? $t['size'] : '1x1',
 			'url' => $url,
 			'target' => (($t['target'] ?? '') === '_blank') ? '_blank' : '',
 		);

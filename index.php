@@ -75,11 +75,6 @@ if ($canedit) {
 	print '<div class="custhome-row"><label>'.$langs->trans('CustHomeBgColor').'<input type="color" data-field="bg"></label>';
 	print '<label>'.$langs->trans('CustHomeFgColor').'<input type="color" data-field="fg"></label></div>';
 	print '<div class="custhome-presets" id="custhome-presets"></div>';
-	print '<label>'.$langs->trans('CustHomeSize').'<select data-field="size" class="flat">';
-	foreach (array('1x1', '2x1', '1x2', '2x2', '3x1', '4x1') as $s) {
-		print '<option value="'.$s.'">'.$s.'</option>';
-	}
-	print '</select></label>';
 	print '<div class="custhome-panel-foot"><button type="button" class="butActionDelete" id="custhome-delete"><span class="fa fa-trash"></span> '.$langs->trans('Delete').'</button></div>';
 	print '</div></div>';
 }

@@ -29,6 +29,48 @@ function custhomeInit() {
 		return urlroot + u;
 	}
 
+	function parseSize(sz) {
+		var m = /^(\d)x(\d)$/.exec(sz || '');
+		return m ? { w: Math.max(1, +m[1]), h: Math.max(1, +m[2]) } : { w: 1, h: 1 };
+	}
+
+	/* ---------- hand resize (drag the corner handle) ---------- */
+	function setupResize(el, idx) {
+		var h = el.querySelector('.custhome-resize');
+		if (!h) return;
+		h.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); });
+		h.addEventListener('mousedown', function (e) {
+			if (!editing) return;
+			e.preventDefault(); e.stopPropagation();
+			var cols = Math.max(1, +root.getAttribute('data-columns') || 4);
+			var gs = getComputedStyle(grid);
+			var gap = parseFloat(gs.columnGap) || 14;
+			var cellW = (grid.clientWidth - gap * (cols - 1)) / cols;
+			var cellH = parseFloat(gs.gridAutoRows) || 120;
+			var r = el.getBoundingClientRect();
+			var start = parseSize(tiles[idx].size);
+			el.classList.add('resizing');
+			el.draggable = false;
+			function move(ev) {
+				var w = Math.round((ev.clientX - r.left + gap / 2) / (cellW + gap));
+				var hh = Math.round((ev.clientY - r.top + gap / 2) / (cellH + gap));
+				w = Math.min(cols, Math.max(1, w)); hh = Math.min(4, Math.max(1, hh));
+				el.style.gridColumn = 'span ' + w; el.style.gridRow = 'span ' + hh;
+				el.setAttribute('data-size', w + 'x' + hh);
+			}
+			function up() {
+				document.removeEventListener('mousemove', move);
+				document.removeEventListener('mouseup', up);
+				el.classList.remove('resizing');
+				var ns = el.getAttribute('data-size') || (start.w + 'x' + start.h);
+				if (ns !== tiles[idx].size) { tiles[idx].size = ns; scheduleSave(); }
+				render(); applyEditing();
+			}
+			document.addEventListener('mousemove', move);
+			document.addEventListener('mouseup', up);
+		});
+	}
+
 	function iconClass(ic) {
 		ic = (ic || 'fa-link').trim();
 		if (/^fa[brs]? /.test(ic)) return ic;
@@ -39,7 +81,11 @@ function custhomeInit() {
 		grid.innerHTML = '';
 		tiles.forEach(function (t, i) {
 			var a = document.createElement('a');
-			a.className = 'custhome-tile s-' + (t.size || '1x1');
+			var wh = parseSize(t.size);
+			a.className = 'custhome-tile' + ((wh.w > 1 && wh.h > 1) ? ' big' : '');
+			a.style.setProperty('--w', wh.w);
+			a.style.gridColumn = 'span ' + wh.w;
+			a.style.gridRow = 'span ' + wh.h;
 			a.style.background = t.bg || '#2563eb';
 			a.style.color = t.fg || '#fff';
 			a.href = href(t.url);
@@ -48,7 +94,7 @@ function custhomeInit() {
 			a.innerHTML =
 				'<span class="custhome-ico ' + esc(iconClass(t.icon)) + '"></span>' +
 				'<span class="custhome-ico-bg ' + esc(iconClass(t.icon)) + '"></span>' +
-				(canEdit ? '<button type="button" class="custhome-edit" title="Edit"><span class="fa fa-pen"></span></button>' : '') +
+				(canEdit ? '<button type="button" class="custhome-edit" title="Edit"><span class="fa fa-pen"></span></button><span class="custhome-resize" title="Resize"></span>' : '') +
 				'<span class="custhome-title">' + esc(t.title || L.newtile || 'Tile') + '</span>' +
 				(t.subtitle ? '<span class="custhome-sub">' + esc(t.subtitle) + '</span>' : '');
 			if (canEdit) {
@@ -63,6 +109,7 @@ function custhomeInit() {
 					openPanel(i);
 				});
 				setupDrag(a);
+				setupResize(a, i);
 			}
 			grid.appendChild(a);
 		});
@@ -151,7 +198,6 @@ function custhomeInit() {
 		field('icon').value = t.icon || 'fa-link';
 		field('bg').value = t.bg || '#2563eb';
 		field('fg').value = t.fg || '#ffffff';
-		field('size').value = t.size || '1x1';
 		panel.hidden = false;
 		field('title').focus();
 	}
@@ -167,7 +213,6 @@ function custhomeInit() {
 		t.icon = field('icon').value.trim() || 'fa-link';
 		t.bg = field('bg').value;
 		t.fg = field('fg').value;
-		t.size = field('size').value;
 		render(); applyEditing(); scheduleSave();
 	}
 
@@ -191,7 +236,7 @@ function custhomeInit() {
 			closePanel(); render(); applyEditing(); scheduleSave();
 		});
 
-		['title', 'subtitle', 'url', 'icon', 'bg', 'fg', 'size', 'target'].forEach(function (n) {
+		['title', 'subtitle', 'url', 'icon', 'bg', 'fg', 'target'].forEach(function (n) {
 			var f = field(n);
 			f.addEventListener('input', readPanel);
 			f.addEventListener('change', readPanel);
@@ -216,6 +261,12 @@ function custhomeInit() {
 		});
 
 		document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !panel.hidden) closePanel(); });
+		document.addEventListener('mousedown', function (e) {
+			if (panel.hidden) return;
+			if (panel.contains(e.target)) return;
+			if (e.target.closest && e.target.closest('.custhome-tile')) return; // clicking a tile opens it instead
+			closePanel();
+		});
 	}
 
 	render();
