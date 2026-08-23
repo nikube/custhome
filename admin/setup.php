@@ -19,6 +19,7 @@ if (!$res) {
 }
 
 require_once DOL_DOCUMENT_ROOT.'/core/lib/admin.lib.php';
+require_once DOL_DOCUMENT_ROOT.'/core/lib/ajax.lib.php';
 
 $langs->loadLangs(array('admin', 'custhome@custhome'));
 
@@ -78,7 +79,9 @@ print '<option value="user"'.($scope == 'user' ? ' selected' : '').'>'.$langs->t
 print '</select></td></tr>';
 
 print '<tr class="oddeven"><td>'.$langs->trans('CustHomeColumns').'</td><td>';
-print '<input type="number" min="2" max="12" name="CUSTHOME_COLUMNS" class="flat width50" value="'.getDolGlobalString('CUSTHOME_COLUMNS', '4').'"></td></tr>';
+print '<input type="number" min="2" max="12" name="CUSTHOME_COLUMNS" class="flat width50" value="'.getDolGlobalString('CUSTHOME_COLUMNS', '6').'"></td></tr>';
+
+print '<tr class="oddeven"><td>'.$langs->trans('CustHomeTopMenuOpt').'<br><span class="opacitymedium small">'.$langs->trans('CustHomeTopMenuHelp').'</span></td><td>'.ajax_constantonoff('CUSTHOME_TOPMENU').'</td></tr>';
 
 print '<tr class="oddeven"><td>'.$langs->trans('CustHomeHeading').'</td><td>';
 print '<input type="text" name="CUSTHOME_HEADING" class="flat minwidth300" value="'.dol_escape_htmltag(getDolGlobalString('CUSTHOME_HEADING')).'" placeholder="'.$langs->trans('CustHomeTitle').'"></td></tr>';

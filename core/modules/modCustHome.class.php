@@ -59,7 +59,8 @@ class modCustHome extends DolibarrModules
 		$this->const = array(
 			1 => array('CUSTHOME_TILES', 'chaine', '', 'JSON configuration of the home tiles', 0, 'current', 0),
 			2 => array('CUSTHOME_SCOPE', 'chaine', 'global', 'Tile config scope: global (shared) or user (each user has his own grid)', 0, 'current', 0),
-			3 => array('CUSTHOME_COLUMNS', 'chaine', '4', 'Number of grid columns', 0, 'current', 0),
+			3 => array('CUSTHOME_COLUMNS', 'chaine', '6', 'Number of grid columns', 0, 'current', 0),
+			4 => array('CUSTHOME_TOPMENU', 'chaine', '1', 'Show a top menu button (square) before Home', 0, 'current', 0),
 		);
 
 		if (!isset($conf->custhome)) {
@@ -87,6 +88,22 @@ class modCustHome extends DolibarrModules
 
 		$this->menu = array();
 		$r = 0;
+		// Top menu button placed before "Home" (home position = 10)
+		$this->menu[$r++] = array(
+			'fk_menu' => '',
+			'type' => 'top',
+			'titre' => 'CustHomeTopMenu',
+			'prefix' => '<span class="fas fa-square fa-fw"></span>',
+			'mainmenu' => 'custhome',
+			'leftmenu' => '',
+			'url' => '/custhome/index.php',
+			'langs' => 'custhome@custhome',
+			'position' => 5,
+			'enabled' => 'isModEnabled("custhome") && getDolGlobalString("CUSTHOME_TOPMENU")',
+			'perms' => '$user->hasRight("custhome", "read")',
+			'target' => '',
+			'user' => 2,
+		);
 		$this->menu[$r++] = array(
 			'fk_menu' => 'fk_mainmenu=home',
 			'type' => 'left',

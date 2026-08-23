@@ -35,3 +35,6 @@ CustHomeOpen=Ouvrir la page à tuiles
 CustHomeReset=Réinitialiser la grille globale
 CustHomeResetConfirm=Remettre la grille globale aux tuiles par défaut ?
 CustHomeResetDone=Grille réinitialisée
+CustHomeTopMenu=■
+CustHomeTopMenuOpt=Bouton dans le menu du haut
+CustHomeTopMenuHelp=Ajoute un bouton « ■ » avant « Accueil » dans la barre de menu (désactiver puis réactiver le module si le bouton n'apparaît pas).
