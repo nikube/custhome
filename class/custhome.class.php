@@ -130,6 +130,8 @@ class CustHome
 			'icon' => preg_replace('/[^a-z0-9\- ]/i', '', (string) ($t['icon'] ?? 'fa-link')) ?: 'fa-link',
 			'bg' => preg_match('/^#[0-9a-f]{6}$/i', (string) ($t['bg'] ?? '')) ? strtolower($t['bg']) : '#2563eb',
 			'fg' => preg_match('/^#[0-9a-f]{6}$/i', (string) ($t['fg'] ?? '')) ? strtolower($t['fg']) : '#ffffff',
+			'x' => max(0, (int) ($t['x'] ?? 0)),
+			'y' => max(0, (int) ($t['y'] ?? 0)),
 			'size' => preg_match('/^[1-8]x[1-4]$/', (string) ($t['size'] ?? '')) ? $t['size'] : '1x1',
 			'url' => $url,
 			'target' => (($t['target'] ?? '') === '_blank') ? '_blank' : '',

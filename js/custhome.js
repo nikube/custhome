@@ -1,4 +1,4 @@
-/* CustHome — tile grid editor with auto-save */
+/* CustHome — positioned tile grid editor with auto-save (pointer events: mouse + touch) */
 function custhomeInit() {
 	'use strict';
 
@@ -9,86 +9,116 @@ function custhomeInit() {
 	var canEdit = root.getAttribute('data-canedit') === '1';
 	var ajaxUrl = root.getAttribute('data-ajax');
 	var token = root.getAttribute('data-token');
+	var COLS = Math.max(1, +root.getAttribute('data-columns') || 4);
+	var MAXH = 4;
 	var L = window.CUSTHOME_LANG || {};
 	var tiles = Array.isArray(window.CUSTHOME_TILES) ? window.CUSTHOME_TILES : [];
 	var urlroot = window.CUSTHOME_URLROOT || '';
 	var editing = false;
-	var current = null; // tile being edited
+	var current = null;
 	var saveTimer = null;
 	var PRESETS = ['#2563eb', '#7c3aed', '#db2777', '#ea580c', '#d97706', '#059669', '#0891b2', '#475569', '#1f2937', '#dc2626', '#65a30d', '#0ea5e9'];
 
+	/* ---------- helpers ---------- */
 	function esc(s) {
 		return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
 			return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
 		});
 	}
-
 	function href(u) {
 		if (!u) return '#';
 		if (/^https?:\/\//i.test(u)) return u;
 		return urlroot + u;
 	}
-
-	function parseSize(sz) {
-		var m = /^(\d)x(\d)$/.exec(sz || '');
-		return m ? { w: Math.max(1, +m[1]), h: Math.max(1, +m[2]) } : { w: 1, h: 1 };
-	}
-
-	/* ---------- hand resize (drag the corner handle) ---------- */
-	function setupResize(el, idx) {
-		var h = el.querySelector('.custhome-resize');
-		if (!h) return;
-		h.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); });
-		h.addEventListener('mousedown', function (e) {
-			if (!editing) return;
-			e.preventDefault(); e.stopPropagation();
-			var cols = Math.max(1, +root.getAttribute('data-columns') || 4);
-			var gs = getComputedStyle(grid);
-			var gap = parseFloat(gs.columnGap) || 14;
-			var cellW = (grid.clientWidth - gap * (cols - 1)) / cols;
-			var cellH = parseFloat(gs.gridAutoRows) || 120;
-			var r = el.getBoundingClientRect();
-			var start = parseSize(tiles[idx].size);
-			el.classList.add('resizing');
-			el.draggable = false;
-			function move(ev) {
-				var w = Math.round((ev.clientX - r.left + gap / 2) / (cellW + gap));
-				var hh = Math.round((ev.clientY - r.top + gap / 2) / (cellH + gap));
-				w = Math.min(cols, Math.max(1, w)); hh = Math.min(4, Math.max(1, hh));
-				el.style.gridColumn = 'span ' + w; el.style.gridRow = 'span ' + hh;
-				el.setAttribute('data-size', w + 'x' + hh);
-			}
-			function up() {
-				document.removeEventListener('mousemove', move);
-				document.removeEventListener('mouseup', up);
-				el.classList.remove('resizing');
-				var ns = el.getAttribute('data-size') || (start.w + 'x' + start.h);
-				if (ns !== tiles[idx].size) { tiles[idx].size = ns; scheduleSave(); }
-				render(); applyEditing();
-			}
-			document.addEventListener('mousemove', move);
-			document.addEventListener('mouseup', up);
-		});
-	}
-
 	function iconClass(ic) {
 		ic = (ic || 'fa-link').trim();
 		if (/^fa[brs]? /.test(ic)) return ic;
 		return 'fa ' + ic;
 	}
+	function dims(t) {
+		var m = /^(\d)x(\d)$/.exec(t.size || '');
+		var w = m ? Math.max(1, +m[1]) : 1, h = m ? Math.max(1, +m[2]) : 1;
+		return { w: Math.min(w, COLS), h: Math.min(h, MAXH) };
+	}
+	function rect(t) { var d = dims(t); return { x: +t.x || 0, y: +t.y || 0, w: d.w, h: d.h }; }
+	function overlaps(a, b) {
+		return a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
+	}
+	function isFree(r, skipIdx) {
+		if (r.x < 1 || r.y < 1 || r.x + r.w - 1 > COLS) return false;
+		for (var i = 0; i < tiles.length; i++) {
+			if (i === skipIdx) continue;
+			if (overlaps(r, rect(tiles[i]))) return false;
+		}
+		return true;
+	}
+	function maxRow() {
+		var m = 0;
+		tiles.forEach(function (t) { var r = rect(t); m = Math.max(m, r.y + r.h - 1); });
+		return m;
+	}
+	// Legacy tiles without position: first-fit placement
+	function placeUnpositioned() {
+		var changed = false;
+		tiles.forEach(function (t, i) {
+			if (+t.x >= 1 && +t.y >= 1) return;
+			var d = dims(t);
+			for (var y = 1; y < 200; y++) {
+				for (var x = 1; x <= COLS - d.w + 1; x++) {
+					if (isFree({ x: x, y: y, w: d.w, h: d.h }, i)) { t.x = x; t.y = y; changed = true; return; }
+				}
+			}
+		});
+		return changed;
+	}
 
+	/* ---------- geometry of the grid ---------- */
+	function metrics() {
+		var gs = getComputedStyle(grid);
+		var gap = parseFloat(gs.columnGap) || 14;
+		var gr = grid.getBoundingClientRect();
+		return { gap: gap, left: gr.left, top: gr.top, cellW: (grid.clientWidth - gap * (COLS - 1)) / COLS, cellH: parseFloat(gs.gridAutoRows) || 120 };
+	}
+	function cellAt(m, clientX, clientY) {
+		return {
+			x: Math.floor((clientX - m.left + m.gap / 2) / (m.cellW + m.gap)) + 1,
+			y: Math.floor((clientY - m.top + m.gap / 2) / (m.cellH + m.gap)) + 1
+		};
+	}
+	function place(el, r) {
+		el.style.gridColumn = r.x + ' / span ' + r.w;
+		el.style.gridRow = r.y + ' / span ' + r.h;
+	}
+
+	/* ---------- render ---------- */
 	function render() {
 		grid.innerHTML = '';
+		var rows = maxRow();
+		if (editing) {
+			// empty slots so the user sees the grid (one extra row to drop into)
+			var occ = {};
+			tiles.forEach(function (t) { var r = rect(t); for (var y = r.y; y < r.y + r.h; y++) for (var x = r.x; x < r.x + r.w; x++) occ[x + ',' + y] = 1; });
+			for (var y = 1; y <= rows + 1; y++) {
+				for (var x = 1; x <= COLS; x++) {
+					if (occ[x + ',' + y]) continue;
+					var sl = document.createElement('div');
+					sl.className = 'custhome-slot';
+					place(sl, { x: x, y: y, w: 1, h: 1 });
+					grid.appendChild(sl);
+				}
+			}
+		}
 		tiles.forEach(function (t, i) {
+			var r = rect(t);
 			var a = document.createElement('a');
-			var wh = parseSize(t.size);
-			a.className = 'custhome-tile' + ((wh.w > 1 && wh.h > 1) ? ' big' : '');
-			a.style.setProperty('--w', wh.w);
-			a.style.gridColumn = 'span ' + wh.w;
-			a.style.gridRow = 'span ' + wh.h;
+			a.className = 'custhome-tile' + ((r.w > 1 && r.h > 1) ? ' big' : '');
+			a.style.setProperty('--w', r.w);
+			a.style.setProperty('--h', r.h);
+			place(a, r);
 			a.style.background = t.bg || '#2563eb';
 			a.style.color = t.fg || '#fff';
 			a.href = href(t.url);
+			a.draggable = false;
 			if (t.target === '_blank') { a.target = '_blank'; a.rel = 'noopener'; }
 			a.setAttribute('data-idx', i);
 			a.innerHTML =
@@ -98,17 +128,11 @@ function custhomeInit() {
 				'<span class="custhome-title">' + esc(t.title || L.newtile || 'Tile') + '</span>' +
 				(t.subtitle ? '<span class="custhome-sub">' + esc(t.subtitle) + '</span>' : '');
 			if (canEdit) {
-				a.draggable = false;
-				a.addEventListener('click', function (e) {
-					if (!editing) return;
-					e.preventDefault();
-					openPanel(i);
-				});
+				a.addEventListener('click', function (e) { if (editing) e.preventDefault(); });
 				a.querySelector('.custhome-edit').addEventListener('click', function (e) {
-					e.preventDefault(); e.stopPropagation();
-					openPanel(i);
+					e.preventDefault(); e.stopPropagation(); openPanel(i);
 				});
-				setupDrag(a);
+				setupMove(a, i);
 				setupResize(a, i);
 			}
 			grid.appendChild(a);
@@ -122,13 +146,11 @@ function custhomeInit() {
 		el.textContent = msg || '';
 		el.className = 'custhome-status' + (err ? ' err' : '');
 	}
-
 	function scheduleSave() {
 		clearTimeout(saveTimer);
 		setStatus(L.saving || 'Saving…');
 		saveTimer = setTimeout(save, 500);
 	}
-
 	function save() {
 		var xhr = new XMLHttpRequest();
 		xhr.open('POST', ajaxUrl + (ajaxUrl.indexOf('?') >= 0 ? '&' : '?') + 'token=' + encodeURIComponent(token), true);
@@ -143,49 +165,108 @@ function custhomeInit() {
 		xhr.send(JSON.stringify({ tiles: tiles }));
 	}
 
-	/* ---------- drag & drop reorder ---------- */
-	var dragIdx = null;
-	function setupDrag(el) {
-		el.addEventListener('dragstart', function (e) {
-			if (!editing) { e.preventDefault(); return; }
-			dragIdx = +el.getAttribute('data-idx');
-			el.classList.add('dragging');
-			e.dataTransfer.effectAllowed = 'move';
-			try { e.dataTransfer.setData('text/plain', String(dragIdx)); } catch (x) {}
-		});
-		el.addEventListener('dragend', function () { el.classList.remove('dragging'); clearOver(); });
-		el.addEventListener('dragover', function (e) { if (!editing || dragIdx === null) return; e.preventDefault(); el.classList.add('dragover'); });
-		el.addEventListener('dragleave', function () { el.classList.remove('dragover'); });
-		el.addEventListener('drop', function (e) {
-			if (!editing || dragIdx === null) return;
+	/* ---------- ghost (drop target preview) ---------- */
+	var ghost = null;
+	function showGhost(r, ok) {
+		if (!ghost) { ghost = document.createElement('div'); ghost.className = 'custhome-ghost'; grid.appendChild(ghost); }
+		place(ghost, r);
+		ghost.classList.toggle('bad', !ok);
+	}
+	function hideGhost() { if (ghost) { ghost.remove(); ghost = null; } }
+
+	/* ---------- move by dragging (pointer events) ---------- */
+	function setupMove(el, idx) {
+		el.addEventListener('pointerdown', function (e) {
+			if (!editing || e.button !== 0) return;
+			if (e.target.closest('.custhome-resize, .custhome-edit')) return;
 			e.preventDefault();
-			var to = +el.getAttribute('data-idx');
-			if (to !== dragIdx) {
-				var moved = tiles.splice(dragIdx, 1)[0];
-				tiles.splice(to, 0, moved);
-				render(); applyEditing(); scheduleSave();
+			var m = metrics();
+			var start = rect(tiles[idx]);
+			var sx = e.clientX, sy = e.clientY;
+			var offX = e.clientX - el.getBoundingClientRect().left, offY = e.clientY - el.getBoundingClientRect().top;
+			var moved = false, target = null;
+			el.setPointerCapture(e.pointerId);
+			function onMove(ev) {
+				if (!moved && Math.abs(ev.clientX - sx) < 6 && Math.abs(ev.clientY - sy) < 6) return;
+				if (!moved) { moved = true; el.classList.add('dragging'); }
+				var c = cellAt(m, ev.clientX - offX + m.cellW / 2, ev.clientY - offY + m.cellH / 2);
+				target = { x: Math.min(Math.max(1, c.x), COLS - start.w + 1), y: Math.max(1, c.y), w: start.w, h: start.h };
+				showGhost(target, isFree(target, idx));
+				el.style.transform = 'translate(' + (ev.clientX - sx) + 'px,' + (ev.clientY - sy) + 'px)';
 			}
-			dragIdx = null; clearOver();
+			function onUp() {
+				el.removeEventListener('pointermove', onMove);
+				el.removeEventListener('pointerup', onUp);
+				el.removeEventListener('pointercancel', onUp);
+				el.classList.remove('dragging');
+				el.style.transform = '';
+				hideGhost();
+				if (!moved) { openPanel(idx); return; }
+				if (target && isFree(target, idx) && (target.x !== start.x || target.y !== start.y)) {
+					tiles[idx].x = target.x; tiles[idx].y = target.y;
+					scheduleSave();
+				}
+				render();
+			}
+			el.addEventListener('pointermove', onMove);
+			el.addEventListener('pointerup', onUp);
+			el.addEventListener('pointercancel', onUp);
 		});
 	}
-	function clearOver() {
-		grid.querySelectorAll('.dragover').forEach(function (n) { n.classList.remove('dragover'); });
+
+	/* ---------- resize by dragging the corner handle ---------- */
+	function setupResize(el, idx) {
+		var h = el.querySelector('.custhome-resize');
+		if (!h) return;
+		h.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); });
+		h.addEventListener('pointerdown', function (e) {
+			if (!editing) return;
+			e.preventDefault(); e.stopPropagation();
+			var m = metrics();
+			var r0 = el.getBoundingClientRect();
+			var start = rect(tiles[idx]);
+			var target = null;
+			el.classList.add('resizing');
+			h.setPointerCapture(e.pointerId);
+			function onMove(ev) {
+				var w = Math.round((ev.clientX - r0.left + m.gap / 2) / (m.cellW + m.gap));
+				var hh = Math.round((ev.clientY - r0.top + m.gap / 2) / (m.cellH + m.gap));
+				w = Math.min(COLS - start.x + 1, Math.max(1, w)); hh = Math.min(MAXH, Math.max(1, hh));
+				target = { x: start.x, y: start.y, w: w, h: hh };
+				var ok = isFree(target, idx);
+				place(el, target);
+				el.classList.toggle('resizing-bad', !ok);
+			}
+			function onUp() {
+				h.removeEventListener('pointermove', onMove);
+				h.removeEventListener('pointerup', onUp);
+				h.removeEventListener('pointercancel', onUp);
+				el.classList.remove('resizing', 'resizing-bad');
+				if (target && isFree(target, idx) && (target.w !== start.w || target.h !== start.h)) {
+					tiles[idx].size = target.w + 'x' + target.h;
+					scheduleSave();
+				}
+				render();
+			}
+			h.addEventListener('pointermove', onMove);
+			h.addEventListener('pointerup', onUp);
+			h.addEventListener('pointercancel', onUp);
+		});
 	}
 
 	/* ---------- edit mode ---------- */
-	function applyEditing() {
+	function setEditing(on) {
+		editing = on;
 		root.classList.toggle('editing', editing);
-		grid.querySelectorAll('.custhome-tile').forEach(function (n) { n.draggable = editing; });
 		var b = document.getElementById('custhome-toggle-edit');
-		if (b) b.classList.toggle('butActionRefused', false);
 		if (b) b.innerHTML = '<span class="fa ' + (editing ? 'fa-check' : 'fa-pen') + '"></span> ' + (editing ? (L.done || 'OK') : b.getAttribute('data-label'));
 		if (!editing) closePanel();
+		render();
 	}
 
 	/* ---------- side panel ---------- */
 	var panel = document.getElementById('custhome-panel');
 	function field(name) { return panel ? panel.querySelector('[data-field="' + name + '"]') : null; }
-
 	function openPanel(i) {
 		current = i;
 		var t = tiles[i];
@@ -199,10 +280,15 @@ function custhomeInit() {
 		field('bg').value = t.bg || '#2563eb';
 		field('fg').value = t.fg || '#ffffff';
 		panel.hidden = false;
+		requestAnimationFrame(function () { panel.classList.add('open'); });
 		field('title').focus();
 	}
-	function closePanel() { if (panel) panel.hidden = true; current = null; }
-
+	function closePanel() {
+		if (!panel || panel.hidden) return;
+		panel.classList.remove('open');
+		current = null;
+		setTimeout(function () { if (!panel.classList.contains('open')) panel.hidden = true; }, 260);
+	}
 	function readPanel() {
 		if (current === null) return;
 		var t = tiles[current];
@@ -213,18 +299,20 @@ function custhomeInit() {
 		t.icon = field('icon').value.trim() || 'fa-link';
 		t.bg = field('bg').value;
 		t.fg = field('fg').value;
-		render(); applyEditing(); scheduleSave();
+		render(); scheduleSave();
 	}
 
 	if (canEdit && panel) {
 		var tb = document.getElementById('custhome-toggle-edit');
 		tb.setAttribute('data-label', tb.textContent.trim());
-		tb.addEventListener('click', function () { editing = !editing; applyEditing(); });
+		tb.addEventListener('click', function () { setEditing(!editing); });
 
 		document.getElementById('custhome-add').addEventListener('click', function () {
-			editing = true;
-			tiles.push({ id: Math.random().toString(36).slice(2, 12), title: L.newtile || 'New tile', subtitle: '', icon: 'fa-star', bg: PRESETS[tiles.length % PRESETS.length], fg: '#ffffff', size: '1x1', url: '', target: '' });
-			render(); applyEditing(); scheduleSave();
+			var t = { id: Math.random().toString(36).slice(2, 12), title: L.newtile || 'New tile', subtitle: '', icon: 'fa-star', bg: PRESETS[tiles.length % PRESETS.length], fg: '#ffffff', size: '1x1', url: '', target: '', x: 0, y: 0 };
+			tiles.push(t);
+			placeUnpositioned();
+			if (!editing) setEditing(true); else render();
+			scheduleSave();
 			openPanel(tiles.length - 1);
 		});
 
@@ -233,7 +321,7 @@ function custhomeInit() {
 			if (current === null) return;
 			if (!confirm(L.confirmdelete || 'Delete this tile?')) return;
 			tiles.splice(current, 1);
-			closePanel(); render(); applyEditing(); scheduleSave();
+			closePanel(); render(); scheduleSave();
 		});
 
 		['title', 'subtitle', 'url', 'icon', 'bg', 'fg', 'target'].forEach(function (n) {
@@ -244,10 +332,9 @@ function custhomeInit() {
 		field('urlpick').addEventListener('change', function () {
 			if (this.value) {
 				field('url').value = this.value;
-				// auto title if empty or default
 				var opt = this.options[this.selectedIndex];
 				var tt = field('title');
-				if (!tt.value || tt.value === (L.newtile || 'New tile')) tt.value = opt.textContent.replace(/^—\s*/, '').replace(/^.*\/\s*/, '').replace(/\.php$/, '');
+				if (!tt.value || tt.value === (L.newtile || 'New tile')) tt.value = opt.textContent.replace(/^(—\s*)+/, '').replace(/^.*\/\s*/, '').replace(/\.php$/, '');
 				readPanel();
 			}
 		});
@@ -260,15 +347,20 @@ function custhomeInit() {
 			pr.appendChild(s);
 		});
 
-		document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !panel.hidden) closePanel(); });
-		document.addEventListener('mousedown', function (e) {
-			if (panel.hidden) return;
+		document.addEventListener('keydown', function (e) {
+			if (e.key !== 'Escape') return;
+			if (!panel.hidden) closePanel(); else if (editing) setEditing(false);
+		});
+		// Click in the void: close the panel and leave edit mode
+		document.addEventListener('pointerdown', function (e) {
+			if (!editing) return;
 			if (panel.contains(e.target)) return;
-			if (e.target.closest && e.target.closest('.custhome-tile')) return; // clicking a tile opens it instead
-			closePanel();
+			if (e.target.closest && e.target.closest('.custhome-tile, .custhome-actions')) return;
+			setEditing(false);
 		});
 	}
 
+	if (placeUnpositioned() && canEdit) scheduleSave();
 	render();
 }
 if (document.readyState === 'loading') {
