@@ -36,7 +36,7 @@ function custhomeInit() {
 		return 'fa ' + ic;
 	}
 	function dims(t) {
-		var m = /^(\d)x(\d)$/.exec(t.size || '');
+		var m = /^(\d+)x(\d+)$/.exec(t.size || '');
 		var w = m ? Math.max(1, +m[1]) : 1, h = m ? Math.max(1, +m[2]) : 1;
 		return { w: Math.min(w, COLS), h: Math.min(h, MAXH) };
 	}
@@ -71,6 +71,18 @@ function custhomeInit() {
 		});
 		return changed;
 	}
+
+	/* ---------- square cells: row height = column width ---------- */
+	function syncRowHeight() {
+		var gs = getComputedStyle(grid);
+		var gap = parseFloat(gs.columnGap) || 14;
+		var cols = COLS;
+		var ncols = gs.gridTemplateColumns.split(' ').length; // resolved track list
+		if (ncols >= 1) cols = ncols;
+		var w = (grid.clientWidth - gap * (cols - 1)) / cols;
+		if (w > 0) grid.style.setProperty('--ch-row', Math.round(w) + 'px');
+	}
+	window.addEventListener('resize', syncRowHeight);
 
 	/* ---------- geometry of the grid ---------- */
 	function metrics() {
@@ -360,6 +372,7 @@ function custhomeInit() {
 		});
 	}
 
+	syncRowHeight();
 	if (placeUnpositioned() && canEdit) scheduleSave();
 	render();
 }

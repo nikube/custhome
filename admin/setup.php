@@ -34,7 +34,7 @@ $action = GETPOST('action', 'aZ09');
 if ($action == 'update') {
 	$error = 0;
 	$scope = GETPOST('CUSTHOME_SCOPE', 'aZ09') === 'user' ? 'user' : 'global';
-	$cols = max(2, min(8, GETPOSTINT('CUSTHOME_COLUMNS')));
+	$cols = max(2, min(12, GETPOSTINT('CUSTHOME_COLUMNS')));
 	$heading = GETPOST('CUSTHOME_HEADING', 'alphanohtml');
 	if (dolibarr_set_const($db, 'CUSTHOME_SCOPE', $scope, 'chaine', 0, '', $conf->entity) <= 0) $error++;
 	if (dolibarr_set_const($db, 'CUSTHOME_COLUMNS', $cols, 'chaine', 0, '', $conf->entity) <= 0) $error++;
@@ -78,7 +78,7 @@ print '<option value="user"'.($scope == 'user' ? ' selected' : '').'>'.$langs->t
 print '</select></td></tr>';
 
 print '<tr class="oddeven"><td>'.$langs->trans('CustHomeColumns').'</td><td>';
-print '<input type="number" min="2" max="8" name="CUSTHOME_COLUMNS" class="flat width50" value="'.getDolGlobalString('CUSTHOME_COLUMNS', '4').'"></td></tr>';
+print '<input type="number" min="2" max="12" name="CUSTHOME_COLUMNS" class="flat width50" value="'.getDolGlobalString('CUSTHOME_COLUMNS', '4').'"></td></tr>';
 
 print '<tr class="oddeven"><td>'.$langs->trans('CustHomeHeading').'</td><td>';
 print '<input type="text" name="CUSTHOME_HEADING" class="flat minwidth300" value="'.dol_escape_htmltag(getDolGlobalString('CUSTHOME_HEADING')).'" placeholder="'.$langs->trans('CustHomeTitle').'"></td></tr>';

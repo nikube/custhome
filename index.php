@@ -30,7 +30,7 @@ $ch = new CustHome($db);
 $tiles = $ch->loadTiles($user);
 $canedit = $ch->canEdit($user);
 $catalogue = $canedit ? $ch->linkCatalogue($user) : array();
-$columns = max(2, min(8, (int) getDolGlobalString('CUSTHOME_COLUMNS', '4')));
+$columns = max(2, min(12, (int) getDolGlobalString('CUSTHOME_COLUMNS', '4')));
 
 $arrayofjs = array('/custhome/js/custhome.js');
 $arrayofcss = array('/custhome/css/custhome.css');
