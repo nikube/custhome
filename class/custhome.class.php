@@ -146,13 +146,19 @@ class CustHome
 	public function defaultTiles()
 	{
 		$def = array(
-			array('title' => 'Tiers', 'icon' => 'fa-building', 'bg' => '#2563eb', 'url' => '/societe/list.php', 'size' => '2x1', 'subtitle' => 'Clients, prospects, fournisseurs'),
-			array('title' => 'Devis', 'icon' => 'fa-file-signature', 'bg' => '#7c3aed', 'url' => '/comm/propal/list.php'),
-			array('title' => 'Commandes', 'icon' => 'fa-shopping-cart', 'bg' => '#ea580c', 'url' => '/commande/list.php'),
-			array('title' => 'Factures', 'icon' => 'fa-file-invoice-dollar', 'bg' => '#059669', 'url' => '/compta/facture/list.php'),
-			array('title' => 'Produits', 'icon' => 'fa-cube', 'bg' => '#0891b2', 'url' => '/product/list.php'),
-			array('title' => 'Agenda', 'icon' => 'fa-calendar-alt', 'bg' => '#db2777', 'url' => '/comm/action/index.php'),
-			array('title' => 'Configuration', 'icon' => 'fa-cogs', 'bg' => '#475569', 'url' => '/admin/index.php'),
+			array('title' => 'Tiers', 'subtitle' => 'Clients, prospects, fournisseurs', 'icon' => 'fa-building', 'bg' => '#2563eb', 'url' => '/societe/list.php', 'size' => '2x1', 'x' => 1, 'y' => 1),
+			array('title' => 'Nouveau tiers', 'icon' => 'fa-user-plus', 'bg' => '#1d4ed8', 'url' => '/societe/card.php?action=create', 'size' => '1x1', 'x' => 3, 'y' => 1),
+			array('title' => 'Devis', 'icon' => 'fa-file-signature', 'bg' => '#7c3aed', 'url' => '/comm/propal/list.php', 'size' => '1x1', 'x' => 4, 'y' => 1),
+			array('title' => 'Commandes', 'icon' => 'fa-shopping-cart', 'bg' => '#ea580c', 'url' => '/commande/list.php', 'size' => '1x1', 'x' => 5, 'y' => 1),
+			array('title' => 'Factures', 'subtitle' => 'Clients', 'icon' => 'fa-file-invoice-dollar', 'bg' => '#059669', 'url' => '/compta/facture/list.php', 'size' => '1x1', 'x' => 6, 'y' => 1),
+			array('title' => 'Produits', 'icon' => 'fa-cube', 'bg' => '#0891b2', 'url' => '/product/list.php', 'size' => '1x1', 'x' => 1, 'y' => 2),
+			array('title' => 'Stocks', 'icon' => 'fa-warehouse', 'bg' => '#0e7490', 'url' => '/product/stock/list.php', 'size' => '1x1', 'x' => 2, 'y' => 2),
+			array('title' => 'Agenda', 'subtitle' => 'Mes événements', 'icon' => 'fa-calendar-alt', 'bg' => '#db2777', 'url' => '/comm/action/index.php', 'size' => '2x1', 'x' => 3, 'y' => 2),
+			array('title' => 'Projets', 'icon' => 'fa-project-diagram', 'bg' => '#d97706', 'url' => '/projet/list.php', 'size' => '1x1', 'x' => 5, 'y' => 2),
+			array('title' => 'Banque', 'icon' => 'fa-university', 'bg' => '#65a30d', 'url' => '/compta/bank/list.php', 'size' => '1x1', 'x' => 6, 'y' => 2),
+			array('title' => 'Factures fournisseurs', 'icon' => 'fa-file-invoice', 'bg' => '#dc2626', 'url' => '/fourn/facture/list.php', 'size' => '1x1', 'x' => 1, 'y' => 3),
+			array('title' => 'Documents', 'icon' => 'fa-folder-open', 'bg' => '#475569', 'url' => '/ecm/index.php', 'size' => '1x1', 'x' => 2, 'y' => 3),
+			array('title' => 'Configuration', 'subtitle' => 'Modules, société, utilisateurs', 'icon' => 'fa-cogs', 'bg' => '#1f2937', 'url' => '/admin/index.php', 'size' => '2x1', 'x' => 3, 'y' => 3),
 		);
 		return $def;
 	}
