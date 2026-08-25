@@ -1,0 +1,100 @@
+product_id:
+name: CustHome
+slug: custhome
+module_dir: "."
+
+doli_min: V19
+doli_max: V23
+php_min: "7.4"
+
+price: "29"
+contact: nz@anatoleconseil.com
+categories: [interface-utilisateurs]
+keywords: "home page, dashboard, tiles, shortcuts, accueil, tuiles, raccourcis, landing page, grid"
+validity_days: 730
+
+descriptions:
+  en:
+    short: "A modern, tile-based home page for Dolibarr: drag & drop grid, in-place editing, auto-save. Give your users a clean start screen."
+    long: |
+      <h2>CustHome — a modern tile home page for Dolibarr</h2>
+      <p>Replace the default Dolibarr home page with a clean grid of colored tiles, in the style of
+      modern application launchers. Perfect to give every user (or every customer you deploy Dolibarr
+      for) a simple, visual start screen with the shortcuts that matter.</p>
+      <h3>Edit everything in place — saved automatically</h3>
+      <ul>
+        <li><b>Edit mode</b> right on the page: click a tile to open a side panel and change its
+        title, subtitle, icon, colors and link.</li>
+        <li><b>Drag &amp; drop</b> tiles on a real grid: free placement, empty cells allowed,
+        nothing is reflowed behind your back. Resize by dragging the corner handle (1x1 up to full width).</li>
+        <li><b>Automatic saving</b>: every change is saved instantly (with a "Saved" indicator) —
+        there is no Save button to forget.</li>
+        <li><b>Icon picker</b>: ~270 Font Awesome icons with search and live preview, plus free text
+        input for any other icon. Color presets for a consistent look.</li>
+      </ul>
+      <h3>Link anything</h3>
+      <ul>
+        <li>Pick a target from <b>all the Dolibarr menu entries</b> the user can see (grouped by main menu),</li>
+        <li>or from the <b>pages of your installed custom modules</b>,</li>
+        <li>or type any internal path or external URL (open in a new tab supported).</li>
+      </ul>
+      <h3>Deployment options</h3>
+      <ul>
+        <li><b>Shared grid</b> (one grid for everyone, edited by users with the dedicated permission)
+        or <b>per-user grids</b> — each user arranges their own tiles.</li>
+        <li>Optional <b>"use as landing page"</b> switch: users land on the tiles right after login.</li>
+        <li>Optional button in the top menu bar, number of columns (2–12), custom page heading.</li>
+        <li>Comes with 13 ready-made example tiles at activation.</li>
+      </ul>
+      <h3>Technical</h3>
+      <ul>
+        <li>Dolibarr 19.0 – 23.x, PHP 7.4+. No database table added: configuration is stored as JSON
+        in Dolibarr constants / user parameters, multi-entity aware.</li>
+        <li>Two permissions (view / edit), CSRF-protected AJAX, server-side sanitization of tiles.</li>
+        <li>Works with the Eldy theme top menu; responsive grid (auto flow on mobile).</li>
+      </ul>
+  fr:
+    short: "Une page d'accueil moderne à base de tuiles pour Dolibarr : grille en glisser-déposer, édition en place, sauvegarde automatique."
+    long: |
+      <h2>CustHome — un accueil moderne à tuiles pour Dolibarr</h2>
+      <p>Remplacez la page d'accueil Dolibarr par une grille de tuiles colorées, dans l'esprit des
+      lanceurs d'applications modernes. Idéal pour offrir à chaque utilisateur (ou à chaque client
+      chez qui vous déployez Dolibarr) un écran de démarrage simple et visuel avec les raccourcis
+      qui comptent.</p>
+      <h3>Tout s'édite en place — et s'enregistre tout seul</h3>
+      <ul>
+        <li><b>Mode édition</b> directement sur la page : cliquez sur une tuile pour ouvrir un
+        panneau latéral et changer titre, sous-titre, icône, couleurs et lien.</li>
+        <li><b>Glisser-déposer</b> sur une vraie grille : placement libre, cases vides autorisées,
+        rien ne se réorganise dans votre dos. Redimensionnement en tirant la poignée du coin
+        (de 1x1 à toute la largeur).</li>
+        <li><b>Sauvegarde automatique</b> : chaque changement est enregistré instantanément
+        (indicateur « Enregistré ») — aucun bouton Enregistrer à oublier.</li>
+        <li><b>Sélecteur d'icônes</b> : ~270 icônes Font Awesome avec recherche et aperçu en direct,
+        plus un champ libre pour toute autre icône. Palette de couleurs prédéfinies.</li>
+      </ul>
+      <h3>Reliez tout</h3>
+      <ul>
+        <li>Choisissez la cible parmi <b>toutes les entrées de menu Dolibarr</b> visibles par
+        l'utilisateur (groupées par menu principal),</li>
+        <li>ou parmi les <b>pages de vos modules personnalisés installés</b>,</li>
+        <li>ou saisissez n'importe quel chemin interne ou URL externe (ouverture dans un nouvel
+        onglet possible).</li>
+      </ul>
+      <h3>Options de déploiement</h3>
+      <ul>
+        <li><b>Grille partagée</b> (une grille pour tous, modifiable par les utilisateurs ayant la
+        permission dédiée) ou <b>grille par utilisateur</b> — chacun arrange ses propres tuiles.</li>
+        <li>Option <b>« utiliser comme page d'accueil »</b> : les utilisateurs arrivent sur les
+        tuiles dès la connexion.</li>
+        <li>Bouton optionnel dans la barre de menu du haut, nombre de colonnes (2–12), titre de page
+        personnalisable.</li>
+        <li>13 tuiles d'exemple prêtes à l'emploi à l'activation.</li>
+      </ul>
+      <h3>Technique</h3>
+      <ul>
+        <li>Dolibarr 19.0 – 23.x, PHP 7.4+. Aucune table ajoutée : configuration stockée en JSON
+        dans les constantes Dolibarr / paramètres utilisateur, compatible multi-entité.</li>
+        <li>Deux permissions (voir / modifier), AJAX protégé CSRF, assainissement côté serveur.</li>
+        <li>Compatible menu Eldy ; grille responsive (flux automatique sur mobile).</li>
+      </ul>
