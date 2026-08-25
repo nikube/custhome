@@ -7,7 +7,7 @@
   "url": "https://github.com/nikube/custhome",
   "license": "GPL-3.0-or-later",
   "dolibarr_module_id": 185168,
-  "branch": "main",
+  "branch": "master",
   "compatibility": {
     "0.x": {
       "dolibarr_min": "19.0.0",
