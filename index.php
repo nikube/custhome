@@ -85,6 +85,7 @@ print '</div>';
 
 print '<script>window.CUSTHOME_TILES = '.json_encode($tiles, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP).';';
 print 'window.CUSTHOME_URLROOT = '.json_encode(DOL_URL_ROOT).';';
+print 'window.CUSTHOME_HOSTS = '.json_encode(CustHome::ownHosts()).';';
 print 'window.CUSTHOME_LANG = '.json_encode(array(
 	'saved' => $langs->transnoentities('CustHomeSaved'),
 	'saving' => $langs->transnoentities('CustHomeSaving'),

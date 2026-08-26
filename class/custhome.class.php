@@ -113,16 +113,60 @@ class CustHome
 	 * @param array $t Raw tile
 	 * @return array Clean tile
 	 */
+	/**
+	 * Normalize a tile URL: reject dangerous schemes, turn absolute URLs pointing to
+	 * this Dolibarr into relative paths, strip DOL_URL_ROOT, ensure a leading slash.
+	 * External http(s) URLs are kept as is.
+	 *
+	 * @param string $url Raw URL
+	 * @return string Clean URL ('' if rejected)
+	 */
+	/**
+	 * Hostnames that designate this Dolibarr instance
+	 *
+	 * @return string[]
+	 */
+	public static function ownHosts()
+	{
+		$hosts = array();
+		if (defined('DOL_MAIN_URL_ROOT')) {
+			$hosts[] = strtolower((string) parse_url(DOL_MAIN_URL_ROOT, PHP_URL_HOST));
+		}
+		if (!empty($_SERVER['HTTP_HOST'])) {
+			$hosts[] = strtolower(preg_replace('/:\d+$/', '', $_SERVER['HTTP_HOST']));
+		}
+		return array_values(array_unique(array_filter($hosts)));
+	}
+
+	public static function normalizeUrl($url)
+	{
+		$url = trim($url);
+		if ($url === '') {
+			return '';
+		}
+		// Reject javascript:, data:, etc.
+		if (preg_match('#^[a-z][a-z0-9+.\-]*:#i', $url) && !preg_match('#^https?://#i', $url)) {
+			return '';
+		}
+		if (preg_match('#^https?://#i', $url) || strpos($url, '//') === 0) {
+			$parts = parse_url(strpos($url, '//') === 0 ? 'http:'.$url : $url);
+			$host = strtolower((string) ($parts['host'] ?? ''));
+			if ($host === '' || !in_array($host, self::ownHosts(), true)) {
+				return $url; // external link, keep as is
+			}
+			$url = ($parts['path'] ?? '/').(isset($parts['query']) ? '?'.$parts['query'] : '').(isset($parts['fragment']) ? '#'.$parts['fragment'] : '');
+		}
+		$url = '/'.ltrim($url, '/');
+		// Strip the Dolibarr sub-directory prefix (href() adds it back)
+		if (DOL_URL_ROOT !== '' && (strpos($url, DOL_URL_ROOT.'/') === 0 || $url === DOL_URL_ROOT)) {
+			$url = '/'.ltrim(substr($url, strlen(DOL_URL_ROOT)), '/');
+		}
+		return $url;
+	}
+
 	public function normalizeTile($t)
 	{
-		$url = trim((string) ($t['url'] ?? ''));
-		// Only allow relative Dolibarr paths or http(s) URLs
-		if (preg_match('#^[a-z][a-z0-9+.\-]*:#i', $url) && !preg_match('#^https?://#i', $url)) {
-			$url = ''; // reject javascript:, data:, etc.
-		}
-		if ($url !== '' && !preg_match('#^(/|https?://)#i', $url)) {
-			$url = '/'.ltrim($url, '/');
-		}
+		$url = self::normalizeUrl((string) ($t['url'] ?? ''));
 		return array(
 			'id' => preg_replace('/[^a-z0-9]/', '', (string) ($t['id'] ?? '')) ?: substr(md5(uniqid('', true)), 0, 10),
 			'title' => dol_string_nohtmltag((string) ($t['title'] ?? '')),

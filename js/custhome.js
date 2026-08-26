@@ -31,6 +31,21 @@ function custhomeInit() {
 		if (/^https?:\/\//i.test(u)) return u;
 		return urlroot + u;
 	}
+	function normalizeUrl(u) {
+		u = (u || '').trim();
+		if (!u) return '';
+		if (/^[a-z][a-z0-9+.\-]*:/i.test(u) && !/^https?:\/\//i.test(u)) return '';
+		if (/^https?:\/\//i.test(u) || u.indexOf('//') === 0) {
+			var a = document.createElement('a');
+			a.href = u.indexOf('//') === 0 ? 'http:' + u : u;
+			var hosts = window.CUSTHOME_HOSTS || [location.hostname];
+			if (hosts.indexOf((a.hostname || '').toLowerCase()) < 0) return u; // external
+			u = (a.pathname || '/') + (a.search || '') + (a.hash || '');
+		}
+		u = '/' + u.replace(/^\/+/, '');
+		if (urlroot && (u.indexOf(urlroot + '/') === 0 || u === urlroot)) u = '/' + u.substr(urlroot.length).replace(/^\/+/, '');
+		return u;
+	}
 	function iconClass(ic) {
 		ic = (ic || 'fa-link').trim();
 		if (/^fa[brs]? /.test(ic)) return ic;
@@ -317,7 +332,7 @@ function custhomeInit() {
 		var t = tiles[current];
 		t.title = field('title').value;
 		t.subtitle = field('subtitle').value;
-		t.url = field('url').value.trim();
+		t.url = normalizeUrl(field('url').value);
 		t.target = field('target').checked ? '_blank' : '';
 		t.icon = field('icon').value.trim() || 'fa-link';
 		t.bg = field('bg').value;
