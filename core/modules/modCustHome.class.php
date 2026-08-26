@@ -39,7 +39,7 @@ class modCustHome extends DolibarrModules
 		$this->descriptionlong = "Replaces (or complements) the Dolibarr home page with a modern grid of tiles. Tiles are edited in place (title, subtitle, icon, colors, size, link) with drag & drop ordering and automatic saving. Links can be picked from the Dolibarr menus, the pages of installed custom modules, or typed freely.";
 		$this->editor_name = 'Anatole Conseil';
 		$this->editor_url = '';
-		$this->version = '1.0.0';
+		$this->version = '1.0.1';
 		$this->const_name = 'MAIN_MODULE_'.strtoupper($this->name);
 		$this->picto = 'fa-th-large';
 
