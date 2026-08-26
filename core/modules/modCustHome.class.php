@@ -106,6 +106,35 @@ class modCustHome extends DolibarrModules
 			'target' => '',
 			'user' => 2,
 		);
+		// Left menu under the top button (avoids an empty left column)
+		$this->menu[$r++] = array(
+			'fk_menu' => 'fk_mainmenu=custhome',
+			'type' => 'left',
+			'titre' => 'CustHomeMenu',
+			'mainmenu' => 'custhome',
+			'leftmenu' => 'custhometiles',
+			'url' => '/custhome/index.php',
+			'langs' => 'custhome@custhome',
+			'position' => 1,
+			'enabled' => 'isModEnabled("custhome") && getDolGlobalString("CUSTHOME_TOPMENU")',
+			'perms' => '$user->hasRight("custhome", "read")',
+			'target' => '',
+			'user' => 2,
+		);
+		$this->menu[$r++] = array(
+			'fk_menu' => 'fk_mainmenu=custhome',
+			'type' => 'left',
+			'titre' => 'CustHomeSetup',
+			'mainmenu' => 'custhome',
+			'leftmenu' => 'custhomesetup',
+			'url' => '/custhome/admin/setup.php',
+			'langs' => 'custhome@custhome',
+			'position' => 2,
+			'enabled' => 'isModEnabled("custhome") && getDolGlobalString("CUSTHOME_TOPMENU")',
+			'perms' => '$user->admin',
+			'target' => '',
+			'user' => 2,
+		);
 		$this->menu[$r++] = array(
 			'fk_menu' => 'fk_mainmenu=home',
 			'type' => 'left',
@@ -114,7 +143,7 @@ class modCustHome extends DolibarrModules
 			'leftmenu' => 'custhome',
 			'url' => '/custhome/index.php',
 			'langs' => 'custhome@custhome',
-			'position' => 1,
+			'position' => 100,
 			'enabled' => 'isModEnabled("custhome")',
 			'perms' => '$user->hasRight("custhome", "read")',
 			'target' => '',
