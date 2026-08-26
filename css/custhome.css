@@ -1,5 +1,4 @@
 /* CustHome — tile grid */
-.custhome-page { padding: 4px 8px 40px; }
 .custhome-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 4px 0 18px; flex-wrap: wrap; }
 .custhome-h1 { font-size: 1.6em; font-weight: 600; margin: 0; }
 .custhome-actions { display: flex; align-items: center; gap: 8px; }
