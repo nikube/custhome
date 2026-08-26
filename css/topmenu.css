@@ -1,4 +1,6 @@
-/* CustHome — top menu button: same geometry as the native "Home" entry */
-#mainmenutd_custhome a.tmenuimage { height: 28px; overflow: hidden; }
-#mainmenutd_custhome div.mainmenu.custhome { padding-top: 0; height: 28px; }
+/* CustHome — top menu button: same geometry as the native "Home" entry.
+   Height is set on the inner div only (the theme hides it with display:none
+   when THEME_TOPMENU_DISABLE_IMAGE is on), so the anchor collapses like core entries. */
+#mainmenutd_custhome a.tmenuimage { overflow: hidden; }
+#mainmenutd_custhome div.mainmenu.custhome { padding: 0; height: 28px; line-height: 28px; }
 #mainmenutd_custhome div.mainmenu.custhome span { line-height: 28px; }

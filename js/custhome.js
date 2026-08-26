@@ -137,13 +137,16 @@ function custhomeInit() {
 			a.innerHTML =
 				'<span class="custhome-ico ' + esc(iconClass(t.icon)) + '"></span>' +
 				'<span class="custhome-ico-bg ' + esc(iconClass(t.icon)) + '"></span>' +
-				(canEdit ? '<button type="button" class="custhome-edit" title="Edit"><span class="fa fa-pen"></span></button><span class="custhome-resize" title="Resize"></span>' : '') +
+				(canEdit ? '<button type="button" class="custhome-edit" title="Edit"><span class="fa fa-pen"></span></button><button type="button" class="custhome-del" title="Delete"><span class="fa fa-trash"></span></button><span class="custhome-resize" title="Resize"></span>' : '') +
 				'<span class="custhome-title">' + esc(t.title || L.newtile || 'Tile') + '</span>' +
 				(t.subtitle ? '<span class="custhome-sub">' + esc(t.subtitle) + '</span>' : '');
 			if (canEdit) {
 				a.addEventListener('click', function (e) { if (editing) e.preventDefault(); });
 				a.querySelector('.custhome-edit').addEventListener('click', function (e) {
 					e.preventDefault(); e.stopPropagation(); openPanel(i);
+				});
+				a.querySelector('.custhome-del').addEventListener('click', function (e) {
+					e.preventDefault(); e.stopPropagation(); deleteTile(i);
 				});
 				setupMove(a, i);
 				setupResize(a, i);
@@ -191,7 +194,7 @@ function custhomeInit() {
 	function setupMove(el, idx) {
 		el.addEventListener('pointerdown', function (e) {
 			if (!editing || e.button !== 0) return;
-			if (e.target.closest('.custhome-resize, .custhome-edit')) return;
+			if (e.target.closest('.custhome-resize, .custhome-edit, .custhome-del')) return;
 			e.preventDefault();
 			var m = metrics();
 			var start = rect(tiles[idx]);
@@ -267,6 +270,12 @@ function custhomeInit() {
 		});
 	}
 
+	function deleteTile(i) {
+		if (!confirm(L.confirmdelete || 'Delete this tile?')) return;
+		tiles.splice(i, 1);
+		closePanel(); render(); scheduleSave();
+	}
+
 	/* ---------- edit mode ---------- */
 	function setEditing(on) {
 		editing = on;
@@ -332,10 +341,7 @@ function custhomeInit() {
 
 		document.getElementById('custhome-panel-close').addEventListener('click', closePanel);
 		document.getElementById('custhome-delete').addEventListener('click', function () {
-			if (current === null) return;
-			if (!confirm(L.confirmdelete || 'Delete this tile?')) return;
-			tiles.splice(current, 1);
-			closePanel(); render(); scheduleSave();
+			if (current !== null) deleteTile(current);
 		});
 
 		['title', 'subtitle', 'url', 'icon', 'bg', 'fg', 'target'].forEach(function (n) {
