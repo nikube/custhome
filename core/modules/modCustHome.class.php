@@ -135,20 +135,6 @@ class modCustHome extends DolibarrModules
 			'target' => '',
 			'user' => 2,
 		);
-		$this->menu[$r++] = array(
-			'fk_menu' => 'fk_mainmenu=home',
-			'type' => 'left',
-			'titre' => 'CustHomeMenu',
-			'mainmenu' => 'home',
-			'leftmenu' => 'custhome',
-			'url' => '/custhome/index.php',
-			'langs' => 'custhome@custhome',
-			'position' => 100,
-			'enabled' => 'isModEnabled("custhome")',
-			'perms' => '$user->hasRight("custhome", "read")',
-			'target' => '',
-			'user' => 2,
-		);
 	}
 
 	/**

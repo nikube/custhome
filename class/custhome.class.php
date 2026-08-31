@@ -271,6 +271,11 @@ class CustHome
 			if ($type == 'main') {
 				continue;
 			}
+			// Url prefix of this alt root relative to DOL_URL_ROOT (usually '/custom')
+			$urlprefix = empty($conf->file->dol_url_root[$type]) ? '' : $conf->file->dol_url_root[$type];
+			if (DOL_URL_ROOT !== '' && strpos($urlprefix, DOL_URL_ROOT) === 0) {
+				$urlprefix = substr($urlprefix, strlen(DOL_URL_ROOT));
+			}
 			$dirs = glob(rtrim($root, '/').'/*', GLOB_ONLYDIR);
 			foreach ((array) $dirs as $d) {
 				$mod = basename($d);
@@ -282,10 +287,10 @@ class CustHome
 					if (preg_match('/^(ajax|lib|class|setup|about)|\.lib\.php$|\.class\.php$/i', $base)) {
 						continue;
 					}
-					$custitems[] = array('label' => $mod.' / '.$base, 'url' => '/'.$mod.'/'.$base, 'icon' => 'fa-puzzle-piece');
+					$custitems[] = array('label' => $mod.' / '.$base, 'url' => $urlprefix.'/'.$mod.'/'.$base, 'icon' => 'fa-puzzle-piece');
 				}
 				foreach (glob($d.'/admin/*.php') as $f) {
-					$custitems[] = array('label' => $mod.' / admin / '.basename($f), 'url' => '/'.$mod.'/admin/'.basename($f), 'icon' => 'fa-cog');
+					$custitems[] = array('label' => $mod.' / admin / '.basename($f), 'url' => $urlprefix.'/'.$mod.'/admin/'.basename($f), 'icon' => 'fa-cog');
 				}
 			}
 		}
