@@ -39,3 +39,5 @@ CustHomeTopMenu=Tiles
 CustHomeTopMenuOpt=Top menu button
 CustHomeTopMenuHelp=Adds a "Tiles" button before "Home" in the top menu bar (disable then re-enable the module if it does not show up).
 CustHomeIconSearch=Search an icon…
+CustHomeLight=Light style
+CustHomeLightHelp=See-through tiles with just a coloured outline (the tile text colour is ignored).

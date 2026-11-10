@@ -37,7 +37,7 @@ $arrayofcss = array('/custhome/css/custhome.css');
 
 llxHeader('', $langs->trans('CustHomeTitle'), '', '', 0, 0, $arrayofjs, $arrayofcss, '', 'custhome-page');
 
-print '<div id="custhome" class="custhome-page'.($canedit ? ' custhome-editable' : '').'" data-columns="'.$columns.'" data-canedit="'.($canedit ? 1 : 0).'"';
+print '<div id="custhome" class="custhome-page'.($canedit ? ' custhome-editable' : '').(getDolGlobalString('CUSTHOME_LIGHT') ? ' custhome-light' : '').'" data-columns="'.$columns.'" data-canedit="'.($canedit ? 1 : 0).'"';
 print ' data-ajax="'.dol_buildpath('/custhome/ajax/save.php', 1).'" data-token="'.newToken().'">';
 
 print '<div class="custhome-toolbar">';

@@ -39,3 +39,5 @@ CustHomeTopMenu=Tuiles
 CustHomeTopMenuOpt=Bouton dans le menu du haut
 CustHomeTopMenuHelp=Ajoute un bouton « Tuiles » avant « Accueil » dans la barre de menu (désactiver puis réactiver le module si le bouton n'apparaît pas).
 CustHomeIconSearch=Rechercher une icône…
+CustHomeLight=Style léger
+CustHomeLightHelp=Tuiles transparentes avec un simple contour coloré (la couleur du texte des tuiles est ignorée).

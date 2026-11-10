@@ -10,7 +10,7 @@
 @media (max-width: 900px) { .custhome-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 480px) { .custhome-grid { grid-template-columns: repeat(1, minmax(0, 1fr)); } }
 
-.custhome-tile { position: relative; display: flex; flex-direction: column; justify-content: flex-end; padding: 16px 18px; border-radius: 14px; color: #fff; text-decoration: none !important; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,.08), 0 6px 18px rgba(0,0,0,.08); transition: transform .15s ease, box-shadow .15s ease; }
+.custhome-tile { position: relative; display: flex; flex-direction: column; justify-content: flex-end; padding: 16px 18px; border-radius: 14px; background: var(--bg, #2563eb); color: var(--fg, #fff); text-decoration: none !important; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,.08), 0 6px 18px rgba(0,0,0,.08); transition: transform .15s ease, box-shadow .15s ease; }
 .custhome-tile:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,.10), 0 12px 28px rgba(0,0,0,.14); }
 .custhome-tile::before { content: ""; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(255,255,255,.14), rgba(0,0,0,.10)); pointer-events: none; }
 .custhome-tile .custhome-ico { position: absolute; top: 14px; left: 18px; font-size: 2em; opacity: .9; }
@@ -69,3 +69,10 @@
 .custhome-icons span { display: flex; align-items: center; justify-content: center; height: 32px; border-radius: 6px; cursor: pointer; color: #374151; font-size: 1.1em; }
 .custhome-icons span:hover { background: #eef2ff; color: #1d4ed8; }
 .custhome-icons span.sel { background: #2563eb; color: #fff; }
+
+/* Light style (CUSTHOME_LIGHT): see-through tiles, coloured outline */
+.custhome-light .custhome-tile { background: color-mix(in srgb, var(--bg) 8%, transparent); border: 2px solid var(--bg); color: var(--colortext, #333); box-shadow: none; }
+.custhome-light .custhome-tile:hover { background: color-mix(in srgb, var(--bg) 16%, transparent); box-shadow: 0 6px 18px color-mix(in srgb, var(--bg) 25%, transparent); }
+.custhome-light .custhome-tile::before { display: none; }
+.custhome-light .custhome-tile .custhome-ico, .custhome-light .custhome-tile .custhome-ico-bg { color: var(--bg); }
+.custhome-light.editing .custhome-tile { outline: 0; border-style: dashed; }

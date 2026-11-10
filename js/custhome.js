@@ -77,8 +77,8 @@ function custhomeInit() {
 	function placeUnpositioned() {
 		var changed = false;
 		tiles.forEach(function (t, i) {
-			if (+t.x >= 1 && +t.y >= 1) return;
 			var d = dims(t);
+			if (+t.x >= 1 && +t.y >= 1 && +t.x + d.w - 1 <= COLS) return;
 			for (var y = 1; y < 200; y++) {
 				for (var x = 1; x <= COLS - d.w + 1; x++) {
 					if (isFree({ x: x, y: y, w: d.w, h: d.h }, i)) { t.x = x; t.y = y; changed = true; return; }
@@ -143,8 +143,8 @@ function custhomeInit() {
 			a.style.setProperty('--w', r.w);
 			a.style.setProperty('--h', r.h);
 			place(a, r);
-			a.style.background = t.bg || '#2563eb';
-			a.style.color = t.fg || '#fff';
+			a.style.setProperty('--bg', t.bg || '#2563eb');
+			a.style.setProperty('--fg', t.fg || '#fff');
 			a.href = href(t.url);
 			a.draggable = false;
 			if (t.target === '_blank') { a.target = '_blank'; a.rel = 'noopener'; }
